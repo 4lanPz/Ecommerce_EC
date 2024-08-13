@@ -8,15 +8,12 @@ import {
   AiOutlineOrderedList,
   AiOutlineDown,
 } from "react-icons/ai";
+import { useCart } from "../context/CartContext";  // Asegúrate de importar el hook
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
+  const { cart } = useCart();  // Usar el hook del carrito
 
   const menuItems = [
     { text: "Inicio", icon: <AiOutlineHome size={24} />, to: "/" },
@@ -35,6 +32,8 @@ const Dashboard = () => {
     { text: "Medios", to: "medios" },
     { text: "Creaciones Funcionales", to: "creaciones-funcionales" },
   ];
+
+  const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -76,20 +75,26 @@ const Dashboard = () => {
           <AiOutlineHome size={24} />
         </Link>
 
-        {/* Carrito */}
-        <button
-          onClick={() => navigate("/cart")}
-          className="flex items-center text-white hover:text-gray-300"
-        >
-          <AiOutlineShoppingCart size={24} />
-          <span className="ml-2">Carrito</span>
-        </button>
+        {/* Resto del contenido de la barra de navegación */}
       </nav>
 
       {/* Contenido que cambia */}
       <main className="flex-1 overflow-y-auto bg-gray-100 p-8">
         <Outlet />
       </main>
+
+      {/* Botón flotante del carrito */}
+      <button
+        onClick={() => navigate("carrito")}
+        className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition"
+      >
+        <AiOutlineShoppingCart size={24} />
+        {cartItemCount > 0 && (
+          <span className="absolute top-0 right-0 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+            {cartItemCount}
+          </span>
+        )}
+      </button>
     </div>
   );
 };
